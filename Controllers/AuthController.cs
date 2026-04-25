@@ -48,7 +48,7 @@ namespace Lab06_AlexandroCano.Controllers
             return Ok(new { message, userId });
         }
 
-        // POST: api/auth/login
+        // POST: api/auth/login - Cualquiera puede intentar login
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -64,7 +64,7 @@ namespace Lab06_AlexandroCano.Controllers
             return Ok(data);
         }
 
-        // GET: api/auth/profile - requiere JWT válido
+        // GET: api/auth/profile - Cualquier usuario autenticado
         [HttpGet("profile")]
         [Authorize]
         public IActionResult GetProfile()
@@ -74,6 +74,35 @@ namespace Lab06_AlexandroCano.Controllers
             var userId = User.FindFirst("UserId")?.Value;
 
             return Ok(new { userId, username, role });
+        }
+
+        // GET: api/auth/users - Solo Admins (política AdminOnly)
+        [HttpGet("users")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _authService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
+        // PUT: api/auth/change-password - User o Admin (política UserOrAdmin)
+        [HttpPut("change-password")]
+        [Authorize(Policy = "UserOrAdmin")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Token inválido." });
+
+            var (success, message) = await _authService.ChangePasswordAsync(userId, dto);
+
+            if (!success)
+                return BadRequest(new { message });
+
+            return Ok(new { message });
         }
     }
 }

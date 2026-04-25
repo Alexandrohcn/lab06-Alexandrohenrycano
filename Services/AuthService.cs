@@ -60,5 +60,34 @@ namespace Lab06_AlexandroCano.Services
 
             return (true, $"Usuario '{created.Username}' registrado correctamente con rol '{created.Role}'.", created.Id);
         }
+
+        public async Task<List<object>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllAsync();
+            return users.Select(u => (object)new
+            {
+                u.Id,
+                u.Username,
+                u.Email,
+                u.Role,
+                u.CreatedAt,
+                u.IsActive
+            }).ToList();
+        }
+
+        public async Task<(bool success, string message)> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                return (false, "Usuario no encontrado.");
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+                return (false, "La contraseña actual es incorrecta.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            await _userRepository.UpdateAsync(user);
+
+            return (true, "Contraseña actualizada correctamente.");
+        }
     }
-} 
+}

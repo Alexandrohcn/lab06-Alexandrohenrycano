@@ -6,5 +6,7 @@ namespace Lab06_AlexandroCano.Services
     {
         Task<(bool success, string message, TokenResponseDto? data)> LoginAsync(LoginDto dto);
         Task<(bool success, string message, int? userId)> RegisterAsync(RegisterDto dto, string forcedRole);
+        Task<List<object>> GetAllUsersAsync();
+        Task<(bool success, string message)> ChangePasswordAsync(int userId, ChangePasswordDto dto);
     }
 }

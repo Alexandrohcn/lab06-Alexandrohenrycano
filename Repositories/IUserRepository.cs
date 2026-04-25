@@ -1,5 +1,5 @@
 using Lab06_AlexandroCano.Models;
- 
+
 namespace Lab06_AlexandroCano.Repositories
 {
     public interface IUserRepository
@@ -10,5 +10,7 @@ namespace Lab06_AlexandroCano.Repositories
         Task<User> AddAsync(User user);
         Task<bool> UsernameExistsAsync(string username);
         Task<bool> EmailExistsAsync(string email);
+        Task<List<User>> GetAllAsync();
+        Task UpdateAsync(User user);
     }
 }
