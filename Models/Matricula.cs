@@ -15,9 +15,9 @@ public partial class Matricula
 
     public string Semestre { get; set; } = null!;
 
-    public virtual Curso IdCursoNavigation { get; set; } = null!;
+    public virtual Curso? IdCursoNavigation { get; set; }
 
-    public virtual Estudiante IdEstudianteNavigation { get; set; } = null!;
+    public virtual Estudiante? IdEstudianteNavigation { get; set; }
 
-    public virtual Profesore IdProfesorNavigation { get; set; } = null!;
+    public virtual Profesore? IdProfesorNavigation { get; set; }
 }
